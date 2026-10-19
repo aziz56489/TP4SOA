@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  id="Definitions_RequestReview"
+                  targetNamespace="http://example.com/camunda/request-review">
+  <bpmn:process id="requestReview" name="Advice of the day" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_Request" name="Request received">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="requestDescription" label="Request description" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_ToReview</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="UserTask_Review" name="Advice of the day" camunda:assignee="demo">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="requestDescription" label="Request description" type="string" />
+          <camunda:formField id="decision" label="Decision" type="enum">
+            <camunda:value id="approved" name="Approved" />
+            <camunda:value id="rejected" name="Rejected" />
+          </camunda:formField>
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_ToReview</bpmn:incoming>
+      <bpmn:outgoing>Flow_ToEnd</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="EndEvent_Done" name="Review completed">
+      <bpmn:incoming>Flow_ToEnd</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_ToReview" sourceRef="StartEvent_Request" targetRef="UserTask_Review" />
+    <bpmn:sequenceFlow id="Flow_ToEnd" sourceRef="UserTask_Review" targetRef="EndEvent_Done" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_RequestReview">
+    <bpmndi:BPMNPlane id="BPMNPlane_RequestReview" bpmnElement="requestReview">
+      <bpmndi:BPMNShape id="Shape_Start" bpmnElement="StartEvent_Request">
+        <dc:Bounds x="160" y="122" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review" bpmnElement="UserTask_Review">
+        <dc:Bounds x="270" y="100" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_End" bpmnElement="EndEvent_Done">
+        <dc:Bounds x="470" y="122" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_ToReview" bpmnElement="Flow_ToReview">
+        <di:waypoint x="196" y="140" />
+        <di:waypoint x="270" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_ToEnd" bpmnElement="Flow_ToEnd">
+        <di:waypoint x="390" y="140" />
+        <di:waypoint x="470" y="140" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

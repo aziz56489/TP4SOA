@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_EmployeeRecruitment" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.52.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.22.0">
+  <bpmn:process id="Process_07irpwk" name="New employee recruitment" isExecutable="true" camunda:historyTimeToLive="30">
+    <bpmn:startEvent id="StartEvent_1" name="Employee information">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="name" label="Employee name" type="string">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="email" label="Employee email" type="string">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="jobOffer" label="Job offer" type="string">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_SaveEmployee</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="Activity_SaveEmployee" name="Save employee (REST API)" camunda:expression="${employeeProcessService.saveEmployee(name, email, jobOffer)}" camunda:resultVariable="employee_id">
+      <bpmn:incoming>Flow_SaveEmployee</bpmn:incoming>
+      <bpmn:outgoing>Flow_CallAdvice</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_CallAdvice" name="Call advice (REST API)" camunda:expression="${adviceService.getAdvice()}" camunda:resultVariable="advice_of_the_day">
+      <bpmn:incoming>Flow_CallAdvice</bpmn:incoming>
+      <bpmn:outgoing>Flow_CheckAdvice</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="Activity_CheckAdvice" name="Check and validate advice" camunda:assignee="demo">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="name" label="Employee name" type="string" />
+          <camunda:formField id="email" label="Employee email" type="string" />
+          <camunda:formField id="jobOffer" label="Job offer" type="string" />
+          <camunda:formField id="advice_of_the_day" label="Advice" type="string" />
+          <camunda:formField id="decision" label="HR validation" type="enum">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+            <camunda:value id="approved" name="Approve advice" />
+            <camunda:value id="rejected" name="Reject advice" />
+          </camunda:formField>
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_CheckAdvice</bpmn:incoming>
+      <bpmn:outgoing>Flow_0h2tcht</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="EndEvent_Finalized">
+      <bpmn:incoming>Flow_0h2tcht</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_SaveEmployee" sourceRef="StartEvent_1" targetRef="Activity_SaveEmployee" />
+    <bpmn:sequenceFlow id="Flow_CallAdvice" sourceRef="Activity_SaveEmployee" targetRef="Activity_CallAdvice" />
+    <bpmn:sequenceFlow id="Flow_CheckAdvice" sourceRef="Activity_CallAdvice" targetRef="Activity_CheckAdvice" />
+    <bpmn:sequenceFlow id="Flow_0h2tcht" sourceRef="Activity_CheckAdvice" targetRef="EndEvent_Finalized" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_EmployeeRecruitment">
+    <bpmndi:BPMNPlane id="BPMNPlane_EmployeeRecruitment" bpmnElement="Process_07irpwk">
+      <bpmndi:BPMNShape id="Shape_Start" bpmnElement="StartEvent_1">
+        <dc:Bounds x="160" y="142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="151" y="178" width="55" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SaveEmployee" bpmnElement="Activity_SaveEmployee">
+        <dc:Bounds x="260" y="120" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_CallAdvice" bpmnElement="Activity_CallAdvice">
+        <dc:Bounds x="440" y="120" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_CheckAdvice" bpmnElement="Activity_CheckAdvice">
+        <dc:Bounds x="620" y="120" width="150" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalized" bpmnElement="EndEvent_Finalized">
+        <dc:Bounds x="882" y="142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="870" y="178" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_SaveEmployee" bpmnElement="Flow_SaveEmployee">
+        <di:waypoint x="196" y="160" />
+        <di:waypoint x="260" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_CallAdvice" bpmnElement="Flow_CallAdvice">
+        <di:waypoint x="390" y="160" />
+        <di:waypoint x="440" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_CheckAdvice" bpmnElement="Flow_CheckAdvice">
+        <di:waypoint x="570" y="160" />
+        <di:waypoint x="620" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0h2tcht_di" bpmnElement="Flow_0h2tcht">
+        <di:waypoint x="770" y="160" />
+        <di:waypoint x="882" y="160" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
